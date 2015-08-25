@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="everything"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+    xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+    <thing-type id="thermostat">
+        <label>Thermostat</label>
+        <description>Sample Thermostat</description>
+
+        <channels>
+            <channel id="temperature" typeId="temperature" />
+            <channel id="target-temperature" typeId="target-temperature" />
+        </channels>
+    </thing-type>
+
+    <thing-type id="switch">
+        <label>Switch</label>
+        <description>Sample Switch</description>
+
+        <channels>
+            <channel id="power" typeId="power" />
+        </channels>
+    </thing-type>
+
+    <thing-type id="wearable">
+        <label>Wearable</label>
+        <description>Sample Wearable</description>
+
+        <channels>
+            <channel id="location" typeId="location" />
+        </channels>
+    </thing-type>
+
+    <thing-type id="player">
+        <label>Hifi Player</label>
+        <description>Sample Hifi Player</description>
+
+        <channels>
+            <channel id="power" typeId="power" />
+            <channel id="player" typeId="player" />
+            <channel id="volume" typeId="volume" />
+            <channel id="bass-level" typeId="bass-level" />
+        </channels>
+
+        <config-description>
+            <parameter name="ipAddress" type="text" required="true">
+                <label>IP Address</label>
+            </parameter>
+            <parameter name="username" type="text">
+                <label>Username</label>
+                <description>Username to connect the system.</description>
+                <default>admin</default>
+            </parameter>
+            <parameter name="password" type="text">
+                <label>Passoword</label>
+                <context>password</context>
+                <description>Specifies the refresh interval in seconds.</description>
+            </parameter>
+            <parameter name="check" type="boolean">
+                <label>Activate Display</label>
+                <description>Activates the front display.</description>
+            </parameter>
+            <parameter name="select" type="text">
+                <label>select</label>
+                <description>select something.</description>
+                <options>
+                    <option value="val1">Label1</option>
+                    <option value="val2">label2</option>
+                </options>
+            </parameter>
+        </config-description>
+    </thing-type>
+
+    <channel-type id="temperature">
+        <item-type>Number</item-type>
+        <label>Current Temperature</label>
+        <description>Current Temperature</description>
+        <category>Temperature</category>
+        <state pattern="%d °C" readOnly="true">
+        </state>
+    </channel-type>
+
+    <channel-type id="target-temperature">
+        <item-type>Number</item-type>
+        <label>Target Temperature</label>
+        <description>Target Temperature</description>
+        <category>Temperature</category>
+        <state pattern="%d °C" min="5" max="30" step="1">
+        </state>
+    </channel-type>
+
+    <channel-type id="power">
+        <item-type>Switch</item-type>
+        <label>Power</label>
+        <category>PowerOutlet</category>
+    </channel-type>
+
+    <channel-type id="location">
+        <item-type>Location</item-type>
+        <label>Location</label>
+    </channel-type>
+
+    <channel-type id="player">
+        <item-type>Player</item-type>
+        <label>Control</label>
+    </channel-type>
+
+    <channel-type id="volume">
+        <item-type>Dimmer</item-type>
+        <label>Volume</label>
+        <category>SoundVolume</category>
+    </channel-type>
+
+    <channel-type id="bass-level" advanced="true">
+        <item-type>Number</item-type>
+        <label>Bass Level</label>
+        <description>The Bass Level</description>
+    </channel-type>
+
+</thing:thing-descriptions>
