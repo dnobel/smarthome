@@ -96,8 +96,10 @@ public class ThingTypeRegistry {
      *         was found
      */
     public ThingType getThingType(ThingTypeUID thingTypeUID, Locale locale) {
-        for (ThingType thingType : getThingTypes(locale)) {
-            if (thingType.getUID().equals(thingTypeUID)) {
+
+        for (ThingTypeProvider thingTypeProvider : thingTypeProviders) {
+            ThingType thingType = thingTypeProvider.getThingType(thingTypeUID, locale);
+            if (thingType != null) {
                 return thingType;
             }
         }
@@ -123,28 +125,7 @@ public class ThingTypeRegistry {
 
     public ChannelType getChannelType(ChannelUID channelUID, Locale locale) {
         ThingType thingType = this.getThingType(channelUID.getThingTypeUID(), locale);
-        if (thingType != null) {
-            if (!channelUID.isInGroup()) {
-                for (ChannelDefinition channelDefinition : thingType.getChannelDefinitions()) {
-                    if (channelDefinition.getId().equals(channelUID.getId())) {
-                        return channelDefinition.getType();
-                    }
-                }
-            } else {
-                List<ChannelGroupDefinition> channelGroupDefinitions = thingType.getChannelGroupDefinitions();
-                for (ChannelGroupDefinition channelGroupDefinition : channelGroupDefinitions) {
-                    if (channelGroupDefinition.getId().equals(channelUID.getGroupId())) {
-                        for (ChannelDefinition channelDefinition : channelGroupDefinition.getType()
-                                .getChannelDefinitions()) {
-                            if (channelDefinition.getId().equals(channelUID.getIdWithoutGroup())) {
-                                return channelDefinition.getType();
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return null;
+        return ThingTypeUtil.getChannelType(thingType, channelUID, locale);
     }
 
     protected void addThingTypeProvider(ThingTypeProvider thingTypeProvider) {

@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.smarthome.core.common.osgi.ServiceBinder.Bind;
 import org.eclipse.smarthome.core.common.osgi.ServiceBinder.Unbind;
@@ -54,6 +56,57 @@ public class XmlThingTypeProvider implements ThingTypeProvider {
     private ServiceTracker<SystemChannelTypeProvider, SystemChannelTypeProvider> serviceTracker;
 
     private XmlSystemChannelTypeProvider xmlSystemChannelTypeProvider;
+
+    private class LocalizedThingTypeKey {
+        public ThingTypeUID uid;
+        public Locale locale;
+
+        public LocalizedThingTypeKey(ThingTypeUID uid, Locale locale) {
+            this.uid = uid;
+            this.locale = locale;
+        }
+
+        @Override
+        public int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            result = prime * result + getOuterType().hashCode();
+            result = prime * result + ((locale == null) ? 0 : locale.hashCode());
+            result = prime * result + ((uid == null) ? 0 : uid.hashCode());
+            return result;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            if (getClass() != obj.getClass())
+                return false;
+            LocalizedThingTypeKey other = (LocalizedThingTypeKey) obj;
+            if (!getOuterType().equals(other.getOuterType()))
+                return false;
+            if (locale == null) {
+                if (other.locale != null)
+                    return false;
+            } else if (!locale.equals(other.locale))
+                return false;
+            if (uid == null) {
+                if (other.uid != null)
+                    return false;
+            } else if (!uid.equals(other.uid))
+                return false;
+            return true;
+        }
+
+        private XmlThingTypeProvider getOuterType() {
+            return XmlThingTypeProvider.this;
+        }
+
+    }
+
+    private Map<LocalizedThingTypeKey, ThingType> localizedThingTypeCache = new ConcurrentHashMap<>();
 
     public XmlThingTypeProvider(ServiceTracker<SystemChannelTypeProvider, SystemChannelTypeProvider> serviceTracker,
             XmlSystemChannelTypeProvider xmlSystemChannelTypeProvider) {
@@ -176,6 +229,10 @@ public class XmlThingTypeProvider implements ThingTypeProvider {
     }
 
     private ThingType createLocalizedThingType(Bundle bundle, ThingType thingType, Locale locale) {
+        LocalizedThingTypeKey localizedThingTypeKey = new LocalizedThingTypeKey(thingType.getUID(), locale);
+        if (localizedThingTypeCache.containsKey(localizedThingTypeKey)) {
+            return localizedThingTypeCache.get(localizedThingTypeKey);
+        }
         if (this.thingTypeI18nUtil != null) {
             String label = this.thingTypeI18nUtil.getLabel(bundle, thingType.getUID(), thingType.getLabel(), locale);
             String description = this.thingTypeI18nUtil.getDescription(bundle, thingType.getUID(),
@@ -204,9 +261,11 @@ public class XmlThingTypeProvider implements ThingTypeProvider {
                         localizedChannelDefinitions, localizedChannelGroupDefinitions, thingType.getProperties(),
                         bridgeType.getConfigDescriptionURI());
             }
-            return new ThingType(thingType.getUID(), thingType.getSupportedBridgeTypeUIDs(), label, description,
-                    localizedChannelDefinitions, localizedChannelGroupDefinitions, thingType.getProperties(),
-                    thingType.getConfigDescriptionURI());
+            ThingType localizedThingType = new ThingType(thingType.getUID(), thingType.getSupportedBridgeTypeUIDs(),
+                    label, description, localizedChannelDefinitions, localizedChannelGroupDefinitions,
+                    thingType.getProperties(), thingType.getConfigDescriptionURI());
+            localizedThingTypeCache.put(localizedThingTypeKey, thingType);
+            return localizedThingType;
 
         }
         return thingType;
@@ -214,6 +273,7 @@ public class XmlThingTypeProvider implements ThingTypeProvider {
 
     @Override
     public ThingType getThingType(ThingTypeUID thingTypeUID, Locale locale) {
+
         Collection<Entry<Bundle, List<ThingType>>> thingTypesList = this.bundleThingTypesMap.entrySet();
 
         if (thingTypesList != null) {
@@ -238,7 +298,6 @@ public class XmlThingTypeProvider implements ThingTypeProvider {
             for (Entry<Bundle, List<ThingType>> thingTypes : thingTypesList) {
                 for (ThingType thingType : thingTypes.getValue()) {
                     ThingType localizedThingType = createLocalizedThingType(thingTypes.getKey(), thingType, locale);
-
                     allThingTypes.add(localizedThingType);
                 }
             }
@@ -259,7 +318,12 @@ public class XmlThingTypeProvider implements ThingTypeProvider {
     public synchronized void removeAllThingTypes(Bundle bundle) {
         if (bundle != null) {
             List<ThingType> thingTypes = this.bundleThingTypesMap.get(bundle);
-
+            Set<Entry<LocalizedThingTypeKey, ThingType>> entrySet = localizedThingTypeCache.entrySet();
+            for (Entry<LocalizedThingTypeKey, ThingType> entry : entrySet) {
+                if (thingTypes.contains(entry.getValue())) {
+                    localizedThingTypeCache.remove(entry.getKey());
+                }
+            }
             if (thingTypes != null) {
                 this.bundleThingTypesMap.remove(bundle);
             }
@@ -295,5 +359,6 @@ public class XmlThingTypeProvider implements ThingTypeProvider {
     @Unbind
     public void unsetI18nProvider(I18nProvider i18nProvider) {
         this.thingTypeI18nUtil = null;
+        this.localizedThingTypeCache.clear();
     }
 }
