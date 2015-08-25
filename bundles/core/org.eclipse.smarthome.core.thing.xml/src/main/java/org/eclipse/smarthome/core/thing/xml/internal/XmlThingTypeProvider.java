@@ -36,6 +36,7 @@ import org.eclipse.smarthome.core.types.StateDescription;
 import org.eclipse.smarthome.core.types.StateOption;
 import org.osgi.framework.Bundle;
 import org.osgi.util.tracker.ServiceTracker;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link XmlThingTypeProvider} is a concrete implementation of the {@link ThingTypeProvider} service interface.
@@ -274,13 +275,19 @@ public class XmlThingTypeProvider implements ThingTypeProvider {
     @Override
     public ThingType getThingType(ThingTypeUID thingTypeUID, Locale locale) {
 
+        long start = System.currentTimeMillis();
+
         Collection<Entry<Bundle, List<ThingType>>> thingTypesList = this.bundleThingTypesMap.entrySet();
 
         if (thingTypesList != null) {
             for (Entry<Bundle, List<ThingType>> thingTypes : thingTypesList) {
                 for (ThingType thingType : thingTypes.getValue()) {
                     if (thingType.getUID().equals(thingTypeUID)) {
-                        return createLocalizedThingType(thingTypes.getKey(), thingType, locale);
+                        ThingType localizedThingType = createLocalizedThingType(thingTypes.getKey(), thingType, locale);
+                        long end = System.currentTimeMillis();
+                        LoggerFactory.getLogger(XmlThingTypeProvider.class)
+                                .info("### XML ### Get Thing type for {} took {} ms.", thingTypeUID, (end - start));
+                        return localizedThingType;
                     }
                 }
             }
@@ -291,6 +298,7 @@ public class XmlThingTypeProvider implements ThingTypeProvider {
     @Override
     public synchronized Collection<ThingType> getThingTypes(Locale locale) {
         List<ThingType> allThingTypes = new ArrayList<>(10);
+        long start = System.currentTimeMillis();
 
         Collection<Entry<Bundle, List<ThingType>>> thingTypesList = this.bundleThingTypesMap.entrySet();
 
@@ -302,7 +310,9 @@ public class XmlThingTypeProvider implements ThingTypeProvider {
                 }
             }
         }
-
+        long end = System.currentTimeMillis();
+        LoggerFactory.getLogger(XmlThingTypeProvider.class).info("### XML ### Get thing types took {} ms.",
+                (end - start));
         return allThingTypes;
     }
 
