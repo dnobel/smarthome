@@ -360,6 +360,12 @@ md-input-container.md-default-theme:not(.md-input-invalid).md-input-focused labe
 	color: #4CAF50;
 }
 
+
+md-input-container textarea.mono {
+    font-family: monospace;
+    line-height: 150%;
+}
+
 md-select.md-default-theme:not([disabled]):focus .md-select-label {
   border-bottom-color: #4CAF50;
 }
