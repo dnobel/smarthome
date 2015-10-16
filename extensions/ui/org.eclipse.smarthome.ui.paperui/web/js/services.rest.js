@@ -323,4 +323,51 @@ angular.module('PaperUI.services.rest', ['PaperUI.constants'])
             isArray : true
         },
     });
+}).factory('ruleService', function($resource, restConfig) {
+    return $resource(restConfig.restPath + '/rules', {}, {
+        getAll: {
+        	method : 'GET',
+            isArray : true
+        },
+        getByUid : {
+            method : 'GET',
+            params : {
+                ruleUID : '@ruleUID'
+            },
+            url : restConfig.restPath + '/rules/:ruleUID'
+        },
+        add : {
+            method : 'POST',
+            headers : {
+                'Content-Type' : 'application/json'
+            }
+        },
+        remove : {
+            method : 'DELETE',
+            params : {
+                ruleUID : '@ruleUID'
+            },
+            url : restConfig.restPath + '/rules/:ruleUID'
+        },
+        getModuleConfigParameter : {
+            method : 'GET',
+            params : {
+            	ruleUID : '@ruleUID'
+            },
+            transformResponse: function(data, headersGetter, status) {
+                return {content: data};
+            },
+            url : restConfig.restPath + '/rules/:ruleUID/actions/action/config/script'
+        },
+        setModuleConfigParameter : {
+            method : 'PUT',
+            params : {
+            	ruleUID : '@ruleUID'
+            },
+            url : restConfig.restPath + '/rules/:ruleUID/actions/action/config/script',
+            headers : {
+                'Content-Type' : 'text/plain'
+            }
+        },
+    });
 });

@@ -231,3 +231,10 @@ section#main.control {
 .homeGroup.fab-item h3 {
 	line-height: 55px;
 }
+
+/* Rules */
+
+.rules .card {
+	padding: 20px;
+	min-height: 200px;
+}

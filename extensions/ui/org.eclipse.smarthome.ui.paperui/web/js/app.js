@@ -3,6 +3,7 @@ angular.module('PaperUI', [
   'PaperUI.controllers.control',
   'PaperUI.controllers.setup',
   'PaperUI.controllers.configuration',
+  'PaperUI.controllers.rules',
   'PaperUI.services',
   'PaperUI.services.rest',
   'PaperUI.services.repositories',
@@ -28,6 +29,10 @@ angular.module('PaperUI', [
 	when('/configuration/things', {templateUrl: 'partials/configuration.html', controller: 'ConfigurationPageController', title: 'Configuration'}).
 	when('/configuration/things/view/:thingUID', {templateUrl: 'partials/configuration.html', controller: 'ConfigurationPageController', title: 'Configuration'}).
 	when('/configuration/things/edit/:thingUID', {templateUrl: 'partials/configuration.html', controller: 'ConfigurationPageController', title: 'Configuration'}).
+	when('/rules', {templateUrl: 'partials/rules.html', controller: 'RulesPageController', title: 'Rules'}).
+	when('/rules/new', {templateUrl: 'partials/rules.html', controller: 'RulesPageController', title: 'Rules'}).
+	when('/rules/view/:ruleUID', {templateUrl: 'partials/rules.html', controller: 'RulesPageController', title: 'Rules'}).
+	when('/rules/configure/:ruleUID', {templateUrl: 'partials/rules.html', controller: 'RulesPageController', title: 'Rules'}).
 	when('/preferences', {templateUrl: 'partials/preferences.html', controller: 'PreferencesPageController', title: 'Preferences'}).
 	otherwise({redirectTo: '/control'});
 }]).directive('editableitemstate', function(){
