@@ -382,7 +382,7 @@ public class AutomationCommandsPluggable extends AutomationCommands
     @Override
     public RuleStatus getRuleStatus(String ruleUID) {
         if (ruleRegistry != null) {
-            return ruleRegistry.getStatus(ruleUID);
+            return ruleRegistry.getStatus(ruleUID).getStatus();
         } else {
             return null;
         }
