@@ -18,6 +18,17 @@ angular.module('PaperUI.controllers.rules',
 			toastService.showDefaultToast('Rule removed.');
 		});
 	};
+	$scope.toggleEnabled = function(rule, e) {
+		e.stopImmediatePropagation();
+		ruleService.setEnabled({ruleUID: rule.uid}, (!rule.isEnabled).toString(), function() {
+			$scope.refresh();
+			if(rule.isEnabled) {
+				toastService.showDefaultToast('Rule disabled.');	
+			} else {
+				toastService.showDefaultToast('Rule enabled.');
+			}
+		});
+	};
 	ruleRepository.getAll();
 }).controller('ViewRuleController', function($scope, ruleRepository) {
 	var ruleUID = $scope.path[3];
@@ -36,7 +47,7 @@ angular.module('PaperUI.controllers.rules',
 				"id" : "trigger",
 				"config" : {
 					"eventSource" : $scope.item,
-					"eventTopic" : "smarthome/items/MyTrigger/state",
+					"eventTopic" : "smarthome/items/" + $scope.item + "/state",
 					"eventTypes" : "ItemStateEvent"
 				},
 				"type" : "GenericEventTrigger"
@@ -59,6 +70,9 @@ angular.module('PaperUI.controllers.rules',
 			} ],
 			"name" : $scope.name,
 			"description" : "Sample rule based on scripts"
+		}
+		if(!$scope.state) {
+			delete rule["if"]
 		}
 		console.log(rule);
 		ruleService.add(rule, function() {

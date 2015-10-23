@@ -369,5 +369,15 @@ angular.module('PaperUI.services.rest', ['PaperUI.constants'])
                 'Content-Type' : 'text/plain'
             }
         },
+        setEnabled : {
+            method : 'POST',
+            params : {
+            	ruleUID : '@ruleUID'
+            },
+            url : restConfig.restPath + '/rules/:ruleUID/enable',
+            headers : {
+            	'Content-Type' : 'text/plain'
+            }
+        },
     });
 });

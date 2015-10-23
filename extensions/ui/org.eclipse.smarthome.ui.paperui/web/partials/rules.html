@@ -20,7 +20,7 @@
 					Rule</button>
 			</p>
 			<div class="groups">
-				<div class="clickable" ng-repeat="rule in data.rules"
+				<div class="clickable" ng-repeat="rule in data.rules | orderBy:'uid'"
 					ng-click="navigateTo('view/' + rule.uid)">
 					<div class="rule fab-item text-left">
 						<div class="circle">{{rule.name.substring(0,1)}}</div>
@@ -28,6 +28,10 @@
 							<h3>{{rule.name}}</h3>
 							<p>{{rule.uid}}</p>
 							<div class="actions">
+								<md-button class="md-raised md-icon-alarm-off"
+									ng-click="toggleEnabled(rule, $event)"
+									ng-class="{'md-icon-alarm-off': rule.isEnabled, 'md-icon-alarm-on': !rule.isEnabled}"
+									aria-label="Toggle Enable"></md-button>
 								<md-button class="md-raised md-icon-settings"
 									ng-click="configure(rule, $event)" aria-label="Configure"></md-button>
 								<md-button class="md-raised md-icon-delete"
