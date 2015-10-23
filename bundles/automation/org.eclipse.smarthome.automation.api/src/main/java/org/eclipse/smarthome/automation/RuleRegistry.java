@@ -51,6 +51,8 @@ public interface RuleRegistry extends Registry<Rule, String> {
      * @param ruleUID uid of rule
      * @return {@link RuleStatus} object containing status of looking rule.
      */
-    public RuleStatus getStatus(String ruleUID);
+    public RuleStatusInfo getStatus(String ruleUID);
+
+    Boolean isEnabled(String uid);
 
 }

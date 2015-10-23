@@ -129,9 +129,9 @@ public class DefaultScriptScopeProvider implements ScriptScopeProvider {
             elements.put("StringType", StringType.class);
 
             // services
-            elements.put("ir", itemRegistry);
-            elements.put("tr", thingRegistry);
-            elements.put("be", busEvent);
+            elements.put("items", itemRegistry);
+            elements.put("things", thingRegistry);
+            elements.put("events", busEvent);
 
         }
         return elements;

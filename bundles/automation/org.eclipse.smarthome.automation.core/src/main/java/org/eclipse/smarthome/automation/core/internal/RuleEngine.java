@@ -695,7 +695,7 @@ public class RuleEngine implements ServiceTrackerCustomizer/* <ModuleHandlerFact
      * @param isEnabled true to enable the rule, false to disable it
      */
     public synchronized void setRuleEnabled(String rUID, boolean isEnabled) {
-        RuleStatus status = getRuleStatus(rUID);
+        RuleStatus status = getRuleStatus(rUID).getStatus();
         if (isEnabled) {
             if (status == RuleStatus.DISABLED) {
                 setRuleStatusInfo(rUID, new RuleStatusInfo(RuleStatus.NOT_INITIALIZED));
@@ -738,7 +738,7 @@ public class RuleEngine implements ServiceTrackerCustomizer/* <ModuleHandlerFact
             Set<String> rules = mapModuleTypeToRules.get(moduleTypeName);
             if (rules != null) {
                 for (String rUID : rules) {
-                    RuleStatus ruleStatus = getRuleStatus(rUID);
+                    RuleStatus ruleStatus = getRuleStatus(rUID).getStatus();
                     if (ruleStatus == RuleStatus.NOT_INITIALIZED) {
                         notInitailizedRules = notInitailizedRules != null ? notInitailizedRules
                                 : new HashSet<String>(20);
@@ -784,7 +784,7 @@ public class RuleEngine implements ServiceTrackerCustomizer/* <ModuleHandlerFact
             Set<String> rules = mapModuleTypeToRules.get(moduleTypeName);
             if (rules != null) {
                 for (String rUID : rules) {
-                    RuleStatus ruleStatus = getRuleStatus(rUID);
+                    RuleStatus ruleStatus = getRuleStatus(rUID).getStatus();
                     switch (ruleStatus) {
                         case RUNNING:
                         case IDLE:
@@ -832,7 +832,7 @@ public class RuleEngine implements ServiceTrackerCustomizer/* <ModuleHandlerFact
      * @param td {@link TriggerData} object containing new values for {@link Trigger}'s {@link Output}s
      */
     protected void runRule(RuntimeRule rule, RuleEngineCallbackImpl.TriggerData td) {
-        RuleStatus ruleStatus = getRuleStatus(rule.getUID());
+        RuleStatus ruleStatus = getRuleStatus(rule.getUID()).getStatus();
         if (ruleStatus == RuleStatus.IDLE) {
             try {
 
@@ -1014,12 +1014,12 @@ public class RuleEngine implements ServiceTrackerCustomizer/* <ModuleHandlerFact
      * @param rUID rule uid
      * @return status of the rule or null when such rule does not exists.
      */
-    public synchronized RuleStatus getRuleStatus(String rUID) {
-        RuleStatusInfo info = statusMap.get(rUID);
-        RuleStatus status = null;
-        if (info != null)
-            status = info.getStatus();
-        return status;
+    public synchronized RuleStatusInfo getRuleStatus(String rUID) {
+        return statusMap.get(rUID);
+        // RuleStatus status = null;
+        // if (info != null)
+        // status = info.getStatus();
+        // return status;
     }
 
     protected String getScopeIdentifier() {
@@ -1085,7 +1085,7 @@ public class RuleEngine implements ServiceTrackerCustomizer/* <ModuleHandlerFact
             Set<String> rules = mapModuleTypeToRules.get(moduleTypeName);
             if (rules != null) {
                 for (String rUID : rules) {
-                    RuleStatus ruleStatus = getRuleStatus(rUID);
+                    RuleStatus ruleStatus = getRuleStatus(rUID).getStatus();
                     if (ruleStatus == RuleStatus.NOT_INITIALIZED) {
                         notInitailizedRules = notInitailizedRules != null ? notInitailizedRules
                                 : new HashSet<String>(20);
@@ -1110,7 +1110,7 @@ public class RuleEngine implements ServiceTrackerCustomizer/* <ModuleHandlerFact
             Set<String> rules = mapTemplateToRules.get(templateUID);
             if (rules != null) {
                 for (String rUID : rules) {
-                    RuleStatus ruleStatus = getRuleStatus(rUID);
+                    RuleStatus ruleStatus = getRuleStatus(rUID).getStatus();
                     if (ruleStatus == RuleStatus.NOT_INITIALIZED) {
                         notInitailizedRules = notInitailizedRules != null ? notInitailizedRules
                                 : new HashSet<String>(20);
